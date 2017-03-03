@@ -60,6 +60,9 @@ public class Ad {
   @JsonIgnore(true)
   private long id;
   
+  @JsonIgnore(true)
+  private boolean expired;
+  
   
   public Ad() {
   }
@@ -78,7 +81,16 @@ public class Ad {
         + ", " + getDuration()
         + ", " + getAdContent()
         + ", " + getCreationTimeInMillis()
+        + ", " + isExpired()        
         + "]";
   }
+  
+public boolean isExpired() {
+	return expired;
+}
+
+public void setExpired(boolean expired) {
+	this.expired = expired;
+}
   
 }

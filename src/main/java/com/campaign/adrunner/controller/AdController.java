@@ -93,10 +93,16 @@ public class AdController {
 			method = RequestMethod.GET, 
 			produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public List<Ad> getAdsByParnerId(@PathVariable("partner_id") String partnerId)  throws AdException {
+	public List<Ad> getAdsByPartnerId(@PathVariable("partner_id") String partnerId)  throws AdException {
 		try{
 			logger.info("Inside AdController.getAdsByParnerId() method...");
-			return adServiceImpl.findByPartnerId(partnerId);
+			List<Ad> adList =  adServiceImpl.findByPartnerId(partnerId);
+			if(adList!=null && !adList.isEmpty()) {
+				if(adList.get(0).isExpired()) {
+					throw new AdException("AD EXPIRED");
+				} 
+			}
+			return adList;
 		}catch(Exception e) {
 			throw new AdException(e.getMessage());
 		} 
@@ -119,9 +125,15 @@ public class AdController {
 	@ExceptionHandler(AdException.class)
 	@ResponseBody
 	public ErrorResponse exceptionHandler(Exception ex) throws AdException {
+		
 		ErrorResponse error = new ErrorResponse();
+		if(ex.getMessage().equals("AD EXPIRED")){
+			error.setErrorCode(HttpStatus.OK.value());
+			error.setErrorMessage("Ad Expired, renew the campaign");
+		}else {
 		error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		error.setErrorMessage(ex.getMessage());
+		}
 		return error;
 	}
 	

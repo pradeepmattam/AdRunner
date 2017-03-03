@@ -79,6 +79,11 @@ public class AdServiceImpl implements AdService {
 		} else {
 			LOGGER.info("Inside getAdByParnerId, partnerId: " + partner_id	+ ", NOT FOUND!");
 		}
+
+		for (Ad ad: adList) {
+			if((ad.getCreationTimeInMillis() + ad.getDuration()*1000)< new Date().getTime())
+				ad.setExpired(true);
+		}
 		return adList;
 	}
 
